@@ -1,0 +1,4 @@
+https://spacenews.com/feed,
+https://en.yna.co.kr/RSS/news.xml,
+https://www.38north.org/feed/,
+https://news.google.com/rss/search?q=when:24h allinurl:apnews.com

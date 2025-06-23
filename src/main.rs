@@ -234,9 +234,9 @@ impl App {
                     }
 
                     let width = [
-                        Constraint::Percentage(30),
-                        Constraint::Percentage(5),
                         Constraint::Percentage(65),
+                        Constraint::Percentage(5),
+                        Constraint::Percentage(30),
                     ];
 
                     let table = Table::new(item_rows, width)
@@ -268,9 +268,9 @@ impl App {
                     }
 
                     let width = [
-                        Constraint::Percentage(30),
-                        Constraint::Percentage(5),
                         Constraint::Percentage(65),
+                        Constraint::Percentage(5),
+                        Constraint::Percentage(30),
                     ];
 
                     let table = Table::new(item_rows, width)
