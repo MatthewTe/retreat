@@ -60,3 +60,21 @@ func LoadFileFromBlob(localDBPath string) DatabaseArticlesMsg {
 	return articles
 
 }
+
+func GetArticleMarkdownContent(localDBPath string, articleTitle string) (string, error) {
+
+	db, err := sql.Open("sqlite", localDBPath)
+	if err != nil {
+		return "", nil
+	}
+
+	row := db.QueryRow(`SELECT articleContent FROM rss_articles WHERE title = ?`, articleTitle)
+
+	var articleMarkdown string
+	if err = row.Scan(&articleMarkdown); err != nil {
+		return "", err
+	}
+
+	return articleMarkdown, nil
+
+}

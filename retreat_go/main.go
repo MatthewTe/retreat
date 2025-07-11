@@ -23,7 +23,11 @@ var (
 func main() {
 
 	var articles []list.Item = database.LoadFileFromBlob(defaultDBPath)
-	m := RetreatModel{DBPath: defaultDBPath, ArticleList: list.New(articles, list.NewDefaultDelegate(), 0, 0)}
+	m := RetreatModel{
+		DBPath:      defaultDBPath,
+		ArticleList: list.New(articles, list.NewDefaultDelegate(), 0, 0),
+		State:       ArticleListState,
+	}
 
 	// Initalize the Bubbletea TUI:
 	if _, err := tea.NewProgram(m).Run(); err != nil {
