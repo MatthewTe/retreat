@@ -2,57 +2,61 @@ package database
 
 import (
 	"database/sql"
+	"fmt"
+	"log"
+	"time"
 
+	"github.com/charmbracelet/bubbles/list"
 	_ "modernc.org/sqlite"
 )
 
-func InitDatabase(db *sql.DB) (*sql.DB, error) {
-	// RSS feeds table:
-	/*
-		Title
-		URI to the feed
-		lastBuildDate
-		Feed content stored as XML blob
-	*/
+type DatabaseArticlesMsg []list.Item
+type ArticleItem struct {
+	ArticleTitle string
+	ParentFeed   string
+	PubDate      int64
+}
 
-	// RSS article table
-	/*
-		Parent reference to the [Rss feeds table]
-		Title
-		URI to the item
-		Description (might need an HTML decoder)
-		pubDate
-		Full markdown content of the article stored as a blob
-	*/
-	_, err := db.Exec(`
-		CREATE TABLE IF NOT EXISTS rss_feeds (
-			title TEXT PRIMARY KEY,
-			url TEXT NOT NULL,
-			lastBuildDate INTEGER,
-			feedContent BLOB
-		);
-	`)
+func (i ArticleItem) Title() string       { return i.ArticleTitle }
+func (i ArticleItem) Feed() string        { return i.ParentFeed }
+func (i ArticleItem) FilterValue() string { return i.ArticleTitle }
+func (i ArticleItem) Description() string {
+	return fmt.Sprintf("Published: %s | Feed: %s", time.Unix(i.PubDate, 0), i.ParentFeed)
+}
+
+func LoadFileFromBlob(localDBPath string) DatabaseArticlesMsg {
+	// Given a filepath check the s3 storage bucket for a db. If that db's timestamp is newer than the local version
+	// pull it down and return a connection?? path?? to the database
+	// Needs to confirm the db is readable and accessable by the applicaton in order to not return an error
+
+	db, err := sql.Open("sqlite", localDBPath)
 	if err != nil {
-		return nil, err
+		log.Fatalln(err)
+		var articles []list.Item
+		return articles
 	}
 
-	_, err = db.Exec(`
-		CREATE TABLE IF NOT EXISTS rss_articles (
-			feed TEXT NOT NULL,
-			title TEXT PRIMARY KEY,
-			url TEXT NOT NULL,
-			description TEXT,
-			pubDate INTEGER,
-			articleContent BLOB,
-			FOREIGN KEY (feed) REFERENCES rss_feeds(title)
-		);
-	`)
+	rows, err := db.Query(`SELECT title, feed, pubDate FROM rss_articles`)
 	if err != nil {
-		return nil, err
+		log.Fatalln(err)
+		return nil
+	}
+	defer rows.Close()
+
+	var articles []list.Item
+	for rows.Next() {
+		var article ArticleItem
+		if err = rows.Scan(&article.ArticleTitle, &article.ParentFeed, &article.PubDate); err != nil {
+			log.Fatalln(err)
+			return nil
+		}
+		articles = append(articles, article)
+	}
+	if err = rows.Err(); err != nil {
+		log.Fatalln(err)
+		return articles
 	}
 
-	//log.Println("Sucessfully created tables rss_feeds and rss_articles in database", db.Stats())
-
-	return db, nil
+	return articles
 
 }
