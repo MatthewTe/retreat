@@ -3,11 +3,13 @@ package main
 import "github.com/charmbracelet/bubbles/key"
 
 type KeyMap struct {
-	Up     key.Binding
-	Down   key.Binding
-	Quit   key.Binding
-	Select key.Binding
-	Back   key.Binding
+	Up        key.Binding
+	Down      key.Binding
+	Left      key.Binding
+	Quit      key.Binding
+	Select    key.Binding
+	Back      key.Binding
+	CmdPallet key.Binding
 }
 
 var DefaultKeyMap = KeyMap{
@@ -23,6 +25,10 @@ var DefaultKeyMap = KeyMap{
 		key.WithKeys("j", "down"),
 	),
 
+	Left: key.NewBinding(
+		key.WithKeys("l", "left"),
+	),
+
 	// Need to support chording - I want my gd T_T
 	Select: key.NewBinding(
 		key.WithKeys("enter"),
@@ -30,5 +36,9 @@ var DefaultKeyMap = KeyMap{
 
 	Back: key.NewBinding(
 		key.WithKeys("b"),
+	),
+
+	CmdPallet: key.NewBinding(
+		key.WithKeys(":"),
 	),
 }

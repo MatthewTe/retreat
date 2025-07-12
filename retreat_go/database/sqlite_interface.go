@@ -61,6 +61,83 @@ func LoadFileFromBlob(localDBPath string) DatabaseArticlesMsg {
 
 }
 
+type DatabaseFeedMsg []list.Item
+type FeedItem struct {
+	FeedTitle   string
+	UpdatedDate int64
+}
+
+func (i FeedItem) FilterValue() string { return i.FeedTitle }
+func (i FeedItem) Title() string       { return i.FeedTitle }
+func (i FeedItem) Description() string {
+	return fmt.Sprintf("Published: %s", time.Unix(i.UpdatedDate, 0))
+}
+func LoadFeedsFromDB(localDBPath string) DatabaseFeedMsg {
+
+	db, err := sql.Open("sqlite", localDBPath)
+	if err != nil {
+		log.Fatalln(err)
+		var feeds []list.Item
+		return feeds
+	}
+
+	rows, err := db.Query(`SELECT title, lastBuildDate FROM rss_feeds`)
+	if err != nil {
+		log.Fatalln(err)
+		return nil
+	}
+	defer rows.Close()
+
+	var feeds []list.Item
+	for rows.Next() {
+		var feed FeedItem
+		if err = rows.Scan(&feed.FeedTitle, &feed.UpdatedDate); err != nil {
+			log.Fatalln(err)
+			return nil
+		}
+		feeds = append(feeds, feed)
+	}
+	if err = rows.Err(); err != nil {
+		log.Fatalln(err)
+		return feeds
+	}
+
+	return feeds
+}
+
+func GetArticlesFromFeed(localDBPath string, feedTitle string) DatabaseArticlesMsg {
+	db, err := sql.Open("sqlite", localDBPath)
+	if err != nil {
+		log.Fatalln(err)
+		var articles []list.Item
+		return articles
+	}
+
+	rows, err := db.Query(`SELECT title, feed, pubDate FROM rss_articles WHERE feed = ?`, feedTitle)
+	if err != nil {
+		log.Fatalln(err)
+		return nil
+	}
+	defer rows.Close()
+
+	var articles []list.Item
+	for rows.Next() {
+		var article ArticleItem
+		if err = rows.Scan(&article.ArticleTitle, &article.ParentFeed, &article.PubDate); err != nil {
+			log.Fatalln(err)
+			return nil
+		}
+		articles = append(articles, article)
+	}
+	if err = rows.Err(); err != nil {
+		log.Fatalln(err)
+		return articles
+	}
+
+	return articles
+
+}
+
 func GetArticleMarkdownContent(localDBPath string, articleTitle string) (string, error) {
 
 	db, err := sql.Open("sqlite", localDBPath)

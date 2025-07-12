@@ -5,6 +5,7 @@ import (
 
 	"github.com/MatthewTe/retreat/database"
 	"github.com/charmbracelet/bubbles/list"
+	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 )
 
@@ -23,10 +24,14 @@ var (
 func main() {
 
 	var articles []list.Item = database.LoadFileFromBlob(defaultDBPath)
+	var feeds []list.Item = database.LoadFeedsFromDB(defaultDBPath)
 	m := RetreatModel{
-		DBPath:      defaultDBPath,
+		DBPath:        defaultDBPath,
+		CommandPallet: textinput.New(),
+
 		ArticleList: list.New(articles, list.NewDefaultDelegate(), 0, 0),
-		State:       ArticleListState,
+		FeedList:    list.New(feeds, list.NewDefaultDelegate(), 0, 0),
+		State:       FeedListState,
 	}
 
 	// Initalize the Bubbletea TUI:
