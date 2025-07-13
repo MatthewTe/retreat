@@ -208,7 +208,7 @@ def check_articles_for_changes(feeds: List[CoreRSSFeeds], db_path: str) -> Tuple
 
         with sync_playwright() as p:
 
-            browser = p.firefox.launch(headless=True)
+            browser = p.firefox.launch(headless=False)
             page = browser.new_page()
 
             for item in articles:
