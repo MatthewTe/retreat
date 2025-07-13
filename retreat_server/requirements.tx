@@ -76,8 +76,6 @@ readability-lxml==0.8.4.1
 regex==2024.11.6
 requests==2.32.4
 requests-file==2.1.0
--e git+https://github.com/MatthewTe/retreat.git@9c2b71f932f03e79eeb5ac69a89e66d2b168ea18#egg=retreat_python&subdirectory=retreat_python
--e git+https://github.com/MatthewTe/retreat.git@9c2b71f932f03e79eeb5ac69a89e66d2b168ea18#egg=retreat_server&subdirectory=retreat_server
 rich==14.0.0
 rich-toolkit==0.14.8
 rignore==0.5.1

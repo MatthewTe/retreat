@@ -8,7 +8,7 @@ def upload_db_to_s3(db_path: str) -> bool:
 
     if Path(db_path).is_file():
         try:
-            response = s3_client.upload_file(db_path, "arn:aws:s3:::retreat-articles", "feed_db.sqlite")
+            response = s3_client.upload_file(db_path, "retreat-articles", "feed_db.sqlite")
         except ClientError as e:
             logger.error(e)
             return False

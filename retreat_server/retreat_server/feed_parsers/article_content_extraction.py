@@ -19,14 +19,14 @@ def extract_content_via_playwright(page: Page, url: str) -> str:
         reader_mode_url = f"about:reader?url={extracted_url}"
         page.goto(reader_mode_url, wait_until="domcontentloaded")
         page.wait_for_timeout(1500)
-        page.wait_for_selector("body", timeout=100)
+        page.wait_for_selector("body", timeout=1000)
         html_content = page.locator("body").inner_html()
         content = markdownify(html_content)
     except:
         page.goto(extracted_url, wait_until="domcontentloaded")
         page.wait_for_timeout(1500)
         html_content = page.locator("body").inner_html()
-        page.wait_for_selector("body", timeout=100),
+        page.wait_for_selector("body", timeout=1000),
         html_content =  page.locator("body").inner_html()
         try:
             content = markdownify(html_content)

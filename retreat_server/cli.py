@@ -13,7 +13,7 @@ if __name__ == "__main__":
     parser.add_argument("--database", "-db", help="The sqlite database storing all of the rss feeds", required=True)
     parser.add_argument("--feeds", "-f", nargs="+", default=[], help="Inserts an rss feed into the database for processing")
     parser.add_argument("--load_articles", "-l", action='store_true', help="Syncs all of the feeds and the assocaited articles stored in the database via playwright")
-    parser.add_argument("--push_db", "-p", help="Pushing the sqlite database to s3 storage for access by other apps")
+    parser.add_argument("--push_db", "-p", action="store_true", help="Pushing the sqlite database to s3 storage for access by other apps")
 
     args = parser.parse_args()
 

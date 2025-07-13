@@ -6,6 +6,7 @@ type KeyMap struct {
 	Up        key.Binding
 	Down      key.Binding
 	Left      key.Binding
+	Right     key.Binding
 	Quit      key.Binding
 	Select    key.Binding
 	Back      key.Binding
@@ -27,6 +28,10 @@ var DefaultKeyMap = KeyMap{
 
 	Left: key.NewBinding(
 		key.WithKeys("l", "left"),
+	),
+
+	Right: key.NewBinding(
+		key.WithKeys("h", "right"),
 	),
 
 	// Need to support chording - I want my gd T_T

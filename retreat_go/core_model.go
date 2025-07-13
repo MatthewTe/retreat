@@ -117,6 +117,7 @@ func (m RetreatModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				{
 					// Implement Commands here that I can pipe in to other stuff
 					m.CommandPallet.SetValue("")
+					m.State = FeedListState
 				}
 
 			}
@@ -145,6 +146,15 @@ func (m RetreatModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				}
 			}
 
+		case key.Matches(msg, DefaultKeyMap.Right):
+			{
+				switch m.State {
+				case ArticleListState:
+					{
+						m.State = FeedListState
+					}
+				}
+			}
 		}
 
 	case tea.WindowSizeMsg:

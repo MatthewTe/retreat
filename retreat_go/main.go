@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"log"
 
 	"github.com/MatthewTe/retreat/database"
@@ -9,24 +10,25 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 )
 
-// For go server these things need to get done:
-/*
-- I provide it with aws config ( or load aws config onto machine)
-- It checks the last uploaded date of the db in blob. If its newer than the local copy it pulls it down into preset dir.
-- It opens the TUI w/ the basic read functions for the two tables and renders a formatted table view of all feed articles.
-- When an article is clicked on it renders the markdown content as a scrollable page via https://github.com/charmbracelet/glamour?tab=readme-ov-file
-*/
-
-var (
-	defaultDBPath = "./retreat.db"
-)
-
 func main() {
 
-	var articles []list.Item = database.LoadFileFromBlob(defaultDBPath)
-	var feeds []list.Item = database.LoadFeedsFromDB(defaultDBPath)
+	dbPath := flag.String("database", "./retreat.db", "The Database that is used to render the articles")
+	tryToSync := flag.Bool("sync", false, "If it will check the s3 bucket for a new db to sync")
+
+	flag.Parse()
+
+	if *tryToSync {
+		err := database.SyncDatabsaeFromS3(*dbPath)
+		if err != nil {
+			log.Fatalln(err)
+		}
+
+	}
+
+	var articles []list.Item = database.LoadArticlesFromBlob(*dbPath)
+	var feeds []list.Item = database.LoadFeedsFromDB(*dbPath)
 	m := RetreatModel{
-		DBPath:        defaultDBPath,
+		DBPath:        *dbPath,
 		CommandPallet: textinput.New(),
 
 		ArticleList: list.New(articles, list.NewDefaultDelegate(), 0, 0),
