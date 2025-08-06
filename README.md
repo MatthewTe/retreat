@@ -24,7 +24,7 @@ And I want to try to keep it as small as possible (ideally I would never add add
 Currently by far the most complicated part of the project. At a high level its core functionality is as follows:
 - Launches a playwright headed browser page for each article in an rss feed.
 - Simplifies the article's HTML content via firefoxe's built in reader mode to make it more readable (See the javascript implementation of their readabiliy algorithm [here](https://github.com/mozilla/readability)).
-- Converts article html into markdown via the `markdownify` [python package](https://pypi.org/project markdownify/).
+- Converts article html into markdown via the `markdownify` [python package](https://pypi.org/project/markdownify/).
 - Stores new article content in the sqlite db and syncs the db to S3.
 
 I tried to keep the API surface pretty lean so the server expects a list of rss feeds that are accessable via url for python to extract articles from. You can find my list of rss feeds that I'm currently using the tool with [here](./docs/rss_feeds.txt). 
