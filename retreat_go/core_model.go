@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"slices"
 	"strings"
 
 	"github.com/MatthewTe/retreat/database"
@@ -36,6 +37,8 @@ const (
 	FeedListState
 	ArticleMarkdownState
 	userCmdInputState
+	DailyTaskTrackingState
+	MoodTrackingState
 )
 
 type RetreatModel struct {
@@ -115,9 +118,22 @@ func (m RetreatModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 			case userCmdInputState:
 				{
-					// Implement Commands here that I can pipe in to other stuff
-					m.CommandPallet.SetValue("")
-					m.State = FeedListState
+					var validCmds []string
+					for k := range APPLICATION_COMMANDS {
+						validCmds = append(validCmds, k)
+					}
+
+					if !slices.Contains(validCmds, m.CommandPallet.Value()) {
+						m.State = FeedListState
+						m.CommandPallet.Reset()
+						m.CommandPallet.Blur()
+					} else {
+						// Implement Commands here that I can pipe in to other stuff
+						m.State = APPLICATION_COMMANDS[m.CommandPallet.Value()]
+						m.CommandPallet.Reset()
+						m.CommandPallet.Blur()
+					}
+
 				}
 
 			}
@@ -133,6 +149,12 @@ func (m RetreatModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				case ArticleMarkdownState:
 					{
 						m.State = ArticleListState
+					}
+
+				case userCmdInputState:
+					{
+						m.State = FeedListState
+						m.CommandPallet.Blur()
 					}
 				}
 			}
@@ -240,6 +262,9 @@ func (m RetreatModel) View() string {
 
 	case ArticleMarkdownState:
 		totalViewString = fmt.Sprintf("%s\n%s\n%s", m.headerView(), m.ArticleViewPort.View(), m.footerView())
+
+	case DailyTaskTrackingState:
+		totalViewString = fmt.Sprintf("%s", "Hello World")
 
 	case userCmdInputState:
 		cmdPalletView = cmdPalletFocusStyle.Render(cmdPalletView)

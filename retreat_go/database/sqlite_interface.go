@@ -84,6 +84,57 @@ func SyncDatabsaeFromS3(localDBPath string) error {
 
 }
 
+func InsertMoodTrackingValue(localDBPath string, value float32) error {
+
+	db, err := sql.Open("sqlite", localDBPath)
+	if err != nil {
+		log.Fatalln(err)
+		return err
+	}
+	defer db.Close()
+
+	_, err = db.Exec("INSERT INTO mood_tracker (score) VALUES (?)", value)
+	if err != nil {
+		log.Fatalln(err)
+		return err
+	}
+
+	return nil
+}
+
+type TimeseriesValues struct {
+	Date  string
+	Value float32
+}
+
+func GetMoodValuesTimeseries(localDBPath string) ([]TimeseriesValues, error) {
+
+	db, err := sql.Open("sqlite", localDBPath)
+	if err != nil {
+		log.Fatalln(err)
+		return []TimeseriesValues{}, err
+	}
+	defer db.Close()
+
+	rows, err := db.Query("SELECT date, score FROM mood_tracker")
+	if err != nil {
+		log.Fatalln(err)
+		return []TimeseriesValues{}, nil
+	}
+
+	var values []TimeseriesValues
+	for rows.Next() {
+
+		var currentDateVal string
+		var currentValue float32
+		rows.Scan(&currentDateVal, &currentValue)
+
+		values = append(values, TimeseriesValues{currentDateVal, currentValue})
+	}
+
+	return values, nil
+}
+
 type DatabaseArticlesMsg []list.Item
 type ArticleItem struct {
 	ArticleTitle string
